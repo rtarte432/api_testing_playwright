@@ -1,5 +1,5 @@
-FROM azul/zulu-openjdk:17-jre
+FROM mcr.microsoft.com/playwright/java:v1.35.1-jammy
 EXPOSE 8080
 ADD target/demo-0.0.1-SNAPSHOT.jar demo-0.0.1-SNAPSHOT.jar
-ADD logback-spring.xml logback-spring.xml
-ENTRYPOINT ["java","-jar","/demo-0.0.1-SNAPSHOT.jar","--logging.config=logback-spring.xml"]
+ENTRYPOINT ["jar","-xf","demo-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["mvn","test"]
