@@ -39,7 +39,7 @@ public class TestGitHubAPI {
         headers.put("Content-Type", "application/json");
 
         request = playwright.request().newContext(new APIRequest.NewContextOptions()
-                .setBaseURL("http://localhost:3000")
+                .setBaseURL("http://35.232.135.170/")
                 .setExtraHTTPHeaders(headers));
     }
 
