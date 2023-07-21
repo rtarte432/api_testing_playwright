@@ -17,9 +17,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(OrderAnnotation.class)
 public class TestGitHubAPI {
     private static final String REPO = "test-repo-2";
     private static final String USER = System.getenv("GITHUB_USER");
@@ -70,6 +74,7 @@ public class TestGitHubAPI {
     }
 
     @Test
+    @Order(1)
     void shouldReturnTodos() throws Exception {
 //        Integer responseCode = request.get("/todos").status();
 //        assertEquals(200, responseCode);
@@ -92,58 +97,48 @@ public class TestGitHubAPI {
 //        System.out.println("Exception class: " + exception.getClass());
     }
 
-//    @Test
-//    void shouldCreateBugReport() {
-//        Map<String, String> data = new HashMap<>();
-//        data.put("title", "[Bug] report 1");
-//        data.put("body", "Bug description");
-//        APIResponse newIssue = request.post("/repos/" + USER + "/" + REPO + "/issues",
-//                RequestOptions.create().setData(data));
-//        assertTrue(newIssue.ok());
-//
-//        APIResponse issues = request.get("/repos/" + USER + "/" + REPO + "/issues");
-//        assertTrue(issues.ok());
-//        JsonArray json = new Gson().fromJson(issues.text(), JsonArray.class);
-//        JsonObject issue = null;
-//        for (JsonElement item : json) {
-//            JsonObject itemObj = item.getAsJsonObject();
-//            if (!itemObj.has("title")) {
-//                continue;
-//            }
-//            if ("[Bug] report 1".equals(itemObj.get("title").getAsString())) {
-//                issue = itemObj;
-//                break;
-//            }
-//        }
-//        assertNotNull(issue);
-//        assertEquals("Bug description", issue.get("body").getAsString(), issue.toString());
-//    }
-//
-//    @Test
-//    void shouldCreateFeatureRequest() {
-//        Map<String, String> data = new HashMap<>();
-//        data.put("title", "[Feature] request 1");
-//        data.put("body", "Feature description");
-//        APIResponse newIssue = request.post("/repos/" + USER + "/" + REPO + "/issues",
-//                RequestOptions.create().setData(data));
-//        assertTrue(newIssue.ok());
-//
-//        APIResponse issues = request.get("/repos/" + USER + "/" + REPO + "/issues");
-//        assertTrue(issues.ok());
-//        JsonArray json = new Gson().fromJson(issues.text(), JsonArray.class);
-//        JsonObject issue = null;
-//        for (JsonElement item : json) {
-//            JsonObject itemObj = item.getAsJsonObject();
-//            if (!itemObj.has("title")) {
-//                continue;
-//            }
-//            if ("[Feature] request 1".equals(itemObj.get("title").getAsString())) {
-//                issue = itemObj;
-//                break;
-//            }
-//        }
-//        assertNotNull(issue);
-//        assertEquals("Feature description", issue.get("body").getAsString(), issue.toString());
-//    }
+    @Test
+    @Order(2)
+    void shouldCreateTodo() throws Exception {
+
+        Map<String, String> data = new HashMap<>();
+        data.put("title", "Task 3");
+        data.put("completed", "true");
+
+        APIResponse newIssue = request.post("/todos", RequestOptions.create().setData(data));
+        assertTrue(newIssue.ok());
+
+        Integer responseCode = request.get("/todos/3").status();
+        assertEquals(200, responseCode);
+
+    }
+
+    @Test
+    @Order(3)
+    void shouldUpdateTodo() throws Exception {
+
+        Map<String, String> data = new HashMap<>();
+        data.put("title", "Task 4");
+        data.put("completed", "true");
+
+        APIResponse newIssue = request.put("/todos/3", RequestOptions.create().setData(data));
+        assertTrue(newIssue.ok());
+
+        APIResponse responsePUT = request.get("/todos/3");
+        assertTrue(responsePUT.ok());
+
+    }
+
+    @Test
+    @Order(4)
+    void shouldDeleteTodo() throws Exception {
+
+        APIResponse newIssue = request.delete("/todos/3");
+        assertTrue(newIssue.ok());
+
+        Integer responseCode = request.get("/todos/3").status();
+        assertNotEquals(200, responseCode);
+
+    }
 }
 
